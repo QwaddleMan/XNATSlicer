@@ -1,0 +1,13 @@
+[Central]
+FullName=Central
+URL=https://central.xnat.org
+IsModifiable=False
+CurrUser=
+IsDefault=True
+
+[CNDA]
+FullName=CNDA
+URL=https://cnda.wustl.edu
+IsModifiable=True
+CurrUser=
+IsDefault=False

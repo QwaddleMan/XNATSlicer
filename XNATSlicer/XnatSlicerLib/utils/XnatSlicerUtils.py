@@ -22,7 +22,7 @@ import tempfile
 import platform
 import inspect
 import datetime
-import time 
+import time
 import inspect
 from contextlib import closing
 from zipfile import ZipFile, ZIP_DEFLATED
@@ -45,29 +45,29 @@ class XnatSlicerUtils(object):
     """
     XnatSlicerUtils contains a variety of utility methods
     for XNAT interactions used throughout the
-    XNATSlicer suite. 
+    XNATSlicer suite.
 
-    All of its methods are static; the user doesn't 
+    All of its methods are static; the user doesn't
     need to instantiate the XnatSlicerUtils class to
     use it.
     """
 
     @staticmethod
     def constructNecessaryModuleDirectories():
-        """ 
+        """
         Makes any of the needed modules paths on the
         local system.
         """
         for key, val in XnatSlicerGlobals.LOCAL_URIS.iteritems():
-            if not os.path.exists(val):    
+            if not os.path.exists(val):
                 os.makedirs(val)
 
 
 
 
-    @staticmethod        
+    @staticmethod
     def isRecognizedFileExt(ext):
-        """ 
+        """
         Determine if an extension is a readable file
         by Slicer and/or XNATSlicer.
 
@@ -78,27 +78,27 @@ class XnatSlicerUtils(object):
         @rtype: string
         """
         if len(ext) > 0 and ext[0] != '.':   ext = "." + ext
-        arr = (XnatSlicerGlobals.DICOM_EXTENSIONS + 
-               XnatSlicerGlobals.MRML_EXTENSIONS + 
-               XnatSlicerGlobals.ALL_LOADABLE_EXTENSIONS + 
+        arr = (XnatSlicerGlobals.DICOM_EXTENSIONS +
+               XnatSlicerGlobals.MRML_EXTENSIONS +
+               XnatSlicerGlobals.ALL_LOADABLE_EXTENSIONS +
                XnatSlicerGlobals.SLICER_PACKAGE_EXTENSIONS)
         for item in arr:
             if ext == item:
                 return True
             elif ext.find(item)>-1:
-                return True            
+                return True
         return False
 
 
 
 
     @staticmethod
-    def isExtension(ext, extList):  
-        """  
+    def isExtension(ext, extList):
+        """
         Compares one stirng against
         a set of strings to see if there's a match.
         NOT case sensitive.
-        
+
         @param ext: The extension to check.
         @type ext: string
 
@@ -107,10 +107,10 @@ class XnatSlicerUtils(object):
 
         @return: Whether the filename belongs to the category.
         @rtype: boolean
-        """    
+        """
         ext = "." + ext
         for val in extList:
-            if ext.lower().endswith(val.lower()): 
+            if ext.lower().endswith(val.lower()):
                 return True
         return False
 
@@ -119,7 +119,7 @@ class XnatSlicerUtils(object):
 
     @staticmethod
     def isMiscLoadable( fileName = None):
-        """ 
+        """
         Checks if the fileName's extension is part of
         XnatSlicerGlobals.MISC_LOADABLE_EXTENSIONS
 
@@ -131,12 +131,37 @@ class XnatSlicerUtils(object):
         """
         return XnatSlicerUtils.isExtension(fileName, XnatSlicerGlobals.MISC_LOADABLE_EXTENSIONS)
 
-    
 
+    @staticmethod
+    def isNIFTI(fileName = None):
+        """
+        checks if provided fileName is a NIFTI
 
-    @staticmethod    
+        @param fileName: the file to check
+        @param fileName: string
+
+        @return: Weather the filename belongs to the category
+        @rtype: boolean
+        """
+        if fileName:
+            print("filename is : %s" % fileName)
+        elif fileName == None:
+            print(fileName is null)
+        else:
+            print("I dont know, not showing")
+        try:
+            fileNameExt = '.' + fileName.rsplit('.', 1)[1].lower()
+            for extension in XnatSlicerGlobals.NIFTI_EXTENSIONS:
+                if extension.lower() in fileNameExt:
+                    return True
+            return False
+        except:
+            print("FileName is not valid")
+            return False
+
+    @staticmethod
     def isDICOM(fileName = None):
-        """ 
+        """
         Checks if the provided fileName is a DICOM.
 
         @param fileName: The file to check.
@@ -145,22 +170,32 @@ class XnatSlicerUtils(object):
         @return: Whether the filename belongs to the category.
         @rtype: boolean
         """
-        fileNameExt = '.' + fileName.rsplit('.', 1)[1].lower()
-        for extension in XnatSlicerGlobals.DICOM_EXTENSIONS:
-            if extension.lower() in fileNameExt:
-                return True
-        return False
+        if fileName:
+            print("filename is : %s" % fileName)
+        elif fileName == None:
+            print(fileName is null)
+        else:
+            print("I dont know, not showing")
+        try:
+            fileNameExt = '.' + fileName.rsplit('.', 1)[1].lower()
+            for extension in XnatSlicerGlobals.DICOM_EXTENSIONS:
+                if extension.lower() in fileNameExt:
+                    return True
+            return False
+        except:
+            print("filename is not valid")
+            return False
 
 
 
 
     @staticmethod
     def isAnalyze(fileName = None):
-        """ 
+        """
         Checks if the provided fileName is a an Analyze file.
 
         @param fileName: The file to check.
-        @param fileName: string    
+        @param fileName: string
 
         @return: Whether the filename belongs to the category.
         @rtype: boolean
@@ -170,41 +205,41 @@ class XnatSlicerUtils(object):
 
 
 
-    @staticmethod    
-    def isMRML(fileName = None): 
-        """ 
+    @staticmethod
+    def isMRML(fileName = None):
+        """
         Checks if the provided fileName is a MRML file.
 
         @param fileName: The file to check.
-        @param fileName: string    
+        @param fileName: string
 
         @return: Whether the filename belongs to the category.
         @rtype: boolean
-        """    
+        """
         return XnatSlicerUtils.isExtension(fileName, XnatSlicerGlobals.MRML_EXTENSIONS)
 
 
 
-       
-    @staticmethod       
+
+    @staticmethod
     def isScenePackage( ext = None):
-        """ 
+        """
         Checks if the provided fileName is a scene package.
 
         @param fileName: The file to check.
-        @param fileName: string    
+        @param fileName: string
 
         @return: Whether the filename belongs to the category.
         @rtype: boolean
         """
         return XnatSlicerUtils.isExtension(ext, XnatSlicerGlobals.SLICER_PACKAGE_EXTENSIONS)
-   
 
 
 
-    @staticmethod    
+
+    @staticmethod
     def doNotCache(fileName):
-        """ 
+        """
         Determine if a file is not cachable.
 
         @param fileName: The file name to check against the XnatSlicerUtils.doNotCache list.
@@ -220,9 +255,9 @@ class XnatSlicerUtils(object):
 
 
 
-    @staticmethod    
+    @staticmethod
     def isDecompressible(fileName):
-        """ 
+        """
         Determine if a file can be decompressed.
 
         @param fileName: The file name to check against the XnatSlicerGlobals.DECOMPRESSIBLE_EXTENSIONS list.
@@ -239,18 +274,18 @@ class XnatSlicerUtils(object):
 
 
 
-    @staticmethod    
+    @staticmethod
     def getSaveTuple( fileUri = None):
-        """ 
+        """
         Constructs a save URI based upon a provided
         fileUri by splitting it and then applying the default
         XNAT Slicer scene save locations specified in GLOB.py .
-        
+
         @param fileUri: The file uri to derive the save tuple from.
         @type fileUri: string
 
-        @returns: The save level uri (likely ends at 'experiments'), The specific uri where slicer files are located. 
-        @rtypes: string, string 
+        @returns: The save level uri (likely ends at 'experiments'), The specific uri where slicer files are located.
+        @rtypes: string, string
         """
         saveLevelUri = None
         slicerSaveUri = None
@@ -265,7 +300,7 @@ class XnatSlicerUtils(object):
 
     @staticmethod
     def repositionToMainSlicerWindow(positionable, location = "center"):
-        """ 
+        """
         Repositions a widget window to the main slicer window relative
         to the "location" argument.
 
@@ -277,7 +312,7 @@ class XnatSlicerUtils(object):
         @type location: string
         """
 
-    
+
         #---------------------------
         # Get main window and its position.
         #---------------------------
@@ -285,21 +320,21 @@ class XnatSlicerUtils(object):
         screenMainPos = mainWindow.pos
 
 
-        
+
         #---------------------------
         # Derive coordinates
         #---------------------------
         location = location.lower().strip()
         if location == 'upperleftcorner':
             x = screenMainPos.x()
-            y = screenMainPos.y()  
+            y = screenMainPos.y()
         #
         # If location = 'center'
         #
         else :
             x = screenMainPos.x() + mainWindow.width/2 - positionable.width/2
             y = screenMainPos.y() + mainWindow.height/2 - positionable.height/2
-            
+
         positionable.move(qt.QPoint(x,y))
 
 
@@ -307,7 +342,7 @@ class XnatSlicerUtils(object):
 
     @staticmethod
     def getXnatPathDict(xnatUri):
-        """ 
+        """
         Splits apart the xnatUri into the various
         XNAT folder levels, this split as a dictionary.
 
@@ -325,19 +360,19 @@ class XnatSlicerUtils(object):
                     if (i+1) < len(uriList):
                         uriDict[uriList[i]] = uriList[i+1]
         return uriDict
-    
+
 
 
 
     @staticmethod
-    def generateButton(iconOrLabel="", toolTip="", 
-                       font = qt.QFont('Arial', 10, 10, False),  
+    def generateButton(iconOrLabel="", toolTip="",
+                       font = qt.QFont('Arial', 10, 10, False),
                        size = None, enabled=False):
-        """ 
+        """
         Creates a qt.QPushButton(), with the arguments.  Sets text, font,
         toolTip, icon, size, and enabled state.
 
-        @param iconOrLabel: Either the icon uri or the label of the button.   
+        @param iconOrLabel: Either the icon uri or the label of the button.
             Defaults to ''.
         @type iconOrLabel: string
 
@@ -356,23 +391,23 @@ class XnatSlicerUtils(object):
         @return: The constructed button to return.
         @rtype: qt.QPushButton
         """
-        
+
         button = qt.QPushButton()
-        
-        
-        
+
+
+
         #--------------------
         # Set either Icon or label, depending on
         # whehter the icon file exists.
         #--------------------
-        iconPath = os.path.join(XnatSlicerGlobals.LOCAL_URIS['icons'], 
+        iconPath = os.path.join(XnatSlicerGlobals.LOCAL_URIS['icons'],
                                 iconOrLabel)
         if os.path.exists(iconPath):
             button.setIcon(qt.QIcon(iconPath))
         else:
             button.setText(iconOrLabel)
 
-        
+
             button.setToolTip(toolTip)
             button.setFont(font)
 
@@ -380,16 +415,16 @@ class XnatSlicerUtils(object):
             button.setFixedHeight(size.height())
             button.setFixedWidth(size.width())
 
-                
-                
-        button.setEnabled(enabled) 
+
+
+        button.setEnabled(enabled)
         return button
 
-    
-        
+
+
     @staticmethod
     def makeDateReadable(dateString):
-        """ 
+        """
         Convets XNAT date metadata to a more human readable string.
 
         @param dateString: The XNAT date metadata to convert.
@@ -398,10 +433,10 @@ class XnatSlicerUtils(object):
         @return: The converted XNAT date.
         @rtype: string
         """
-      
+
         newDateString = dateString
         tempStr = str(dateString).strip().replace('\n', '')
-        
+
         if len(tempStr) == 0:
             return ''
 
@@ -413,15 +448,15 @@ class XnatSlicerUtils(object):
         except Exception, e:
             #print "Using default date string from server"#. (Error: %s)" %(e)
             day_string = dateString
-        
+
         return day_string
 
 
 
-    
+
     @staticmethod
     def toPlainText(text):
-        """ 
+        """
         Converts a rich text string to plain text.
 
         @param text: The rich text string to convert.
@@ -433,11 +468,11 @@ class XnatSlicerUtils(object):
         doc = qt.QTextDocument()
         doc.setHtml(text)
         return doc.toPlainText()
-        
+
 
 
     @staticmethod
-    def makeCustomMetadataTag(xnatLevel): 
+    def makeCustomMetadataTag(xnatLevel):
         """
         @param xnatLevel: The XNAT level to derive the custom metadata tag from.
         @type xnatLevel: string
@@ -446,6 +481,3 @@ class XnatSlicerUtils(object):
         @rtype: string
         """
         return XnatSlicerGlobals.CUSTOM_METADATA_SETTINGS_PREFIX + xnatLevel.lower()
-
-
-

@@ -389,6 +389,7 @@ class Workflow_Load(object):
             # cycle through the loadables and
             # create the loader for each loadable list.
             for loadableType, loadableList in loadables.iteritems():
+                print("loadableType = %s" % loadableType)
                 if len(loadableList) > 0:
                     if loadableType == 'analyze':
                         loaders.append(Loader_Analyze(self.MODULE, _src, loadables[loadableType]))
@@ -396,7 +397,8 @@ class Workflow_Load(object):
                         loaders.append(Loader_Dicom(self.MODULE, _src, loadables[loadableType]))
                     if loadableType == 'misc':
                         loaders.append(Loader_File(self.MODULE, _src, loadables[loadableType]))
-
+                    if loadableType == 'nifti':
+                        loaders.append(Loader_Nifti(self.MODULE, _src, loadables[loadableType]))
 
 
         #------------------------
