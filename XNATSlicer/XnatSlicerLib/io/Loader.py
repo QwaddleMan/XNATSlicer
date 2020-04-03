@@ -20,6 +20,7 @@ from __main__ import qt, slicer
 # external
 from Xnat import *
 from MokaUtils import *
+from SideCar import *
 
 # module
 from XnatSlicerGlobals import *
@@ -58,6 +59,9 @@ class Loader(object):
         self.fileUris = fileUris
         self.useCached = None
         self._dstBase = XnatSlicerGlobals.LOCAL_URIS['downloads']
+        self.useNifti = False
+        self.niiName = None
+        self.niiUri = None
 
 
 
@@ -194,15 +198,14 @@ class Loader_Images(Loader):
         #--------------------
         # Derive a src and dst
         #--------------------
-        useNifti = False
-        niiName = None
-        niiUri = None
         if(len(fileUris) == 1 and XnatSlicerUtils.isNIFTI(fileUris[0])):
-            useNifti = True
-            niiUri = fileUris[0]
-            niiName = os.path.basename(niiUri)
-            self._src, self._dst = Xnat.path.modifySrcDstForNiftiDownload(self._src, niiName,
+            self.car = NiftiCar(os.path.join(self._dstBase, 'nifti'))
+            self.useNifti = True
+            self.niiUri = fileUris[0]
+            self.niiName = os.path.basename(self.niiUri)
+            self._src, self._dst = Xnat.path.modifySrcDstForNiftiDownload(self._src, self.niiName,
              self._dstBase)
+            self.car.addFile(self.niiName, self._dst)
         else:
             self._src, self._dst = Xnat.path.modifySrcDstForZipDownload(self._src,
                                                                 self._dstBase)

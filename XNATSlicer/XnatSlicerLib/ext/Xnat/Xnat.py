@@ -16,6 +16,7 @@ import urlparse
 import httplib
 import json
 import re
+import urlparse
 
 
 class Xnat(object):
@@ -1206,7 +1207,7 @@ class Xnat(object):
             """
 
             print("dst base is %s" % dstBase)
-            src = src + img
+            src = src + '/' + img
             dst = os.path.join(dstBase , 'nifti', img)
             print("actual dst is %s" % dst)
 

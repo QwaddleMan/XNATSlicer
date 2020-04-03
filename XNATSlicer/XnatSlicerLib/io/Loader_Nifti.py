@@ -7,6 +7,7 @@ import DICOMScalarVolumePlugin
 
 # module
 from Loader import *
+from SlicerUtils import *
 from XnatSlicerUtils import *
 
 class Loader_Nifti(Loader_Images):
@@ -16,25 +17,23 @@ class Loader_Nifti(Loader_Images):
     """
     def checkCache(self, fileUris):
         """
-        checks nifti cache location for nifti files
+        checks nifti cache location for nifti files.
+        nifti always gets downloaded no mater if its already there
+        also doesnt use database to just dont use cache.
         """
-        print("src location$: %s" % self._src)
-        print(self.MODULE.Settings['CACHE'])
-
+        return False
 
     def load(self):
         """
         Main load method for downloading NIFTI files from an
         XNAT server and loading into Slicer
         """
-        pass
-        #
-        #if self.useCached:
-        #    return self.loadDicomsFromDatabase(self.extractedFiles)
 
-        #if not os.path.exists(self._dst):
-        #    return
+        if not os.path.exists(self._dst) or not self.niiName:
+            return
 
+        SlicerUtils.loadNodeFromFile(self._dst)
+        slicer.app.processEvents()
 
 
 

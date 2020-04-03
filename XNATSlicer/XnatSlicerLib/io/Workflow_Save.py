@@ -27,23 +27,23 @@ from MokaUtils import *
 
 
 
-    
+
 class Workflow_Save(object):
-    """ 
+    """
     Workflow_Save manages all of the processes needed to upload
     a file to an XNAT.  Packaging scenes are conducted here.
     """
 
     def __init__(self, MODULE):
-        """ 
+        """
         Init function.
 
-   
+
         """
-        
+
         self.MODULE = MODULE
         self.ScenePackager = ScenePackager(self.MODULE)
-        
+
         #------------------------
         # Set wait window
         #------------------------
@@ -51,16 +51,16 @@ class Workflow_Save(object):
                                          "Please wait while file uploads...")
 
 
-        
+
     def beginWorkflow(self):
-        """ 
-        Conducts some prelimiary 
-        steps (i.e. origin identification) before uploading 
+        """
+        Conducts some prelimiary
+        steps (i.e. origin identification) before uploading
         the scene to the XNAT host.
         """
 
         #------------------------
-        # If Scene originated from XNAT (i.e. the session manager is active), 
+        # If Scene originated from XNAT (i.e. the session manager is active),
         # we can go right to the 'save' dialog.
         #------------------------
         if self.MODULE.View.sessionManager.sessionArgs:
@@ -71,14 +71,14 @@ class Workflow_Save(object):
             #
             fileSaveDialog = XnatFileSaveDialog(self.MODULE, self)
             fileSaveDialog.show()
-            
+
 
 
         #------------------------
         # If scene is local, or of non-XNAT origin
         #------------------------
         elif (not self.MODULE.View.sessionManager.sessionArgs):
-            
+
             #
             # Construct new sessionArgs
             #
@@ -100,9 +100,9 @@ class Workflow_Save(object):
 
 
 
-        
-    def saveScene(self):    
-        """  
+
+    def saveScene(self):
+        """
         Main function for saving/uploading a file
         to an XNAT host.
         """
@@ -128,32 +128,32 @@ class Workflow_Save(object):
                                 self.MODULE.View.sessionManager.sessionArgs)
 
 
-        
+
         #------------------------
-        # Get the appropriate file paths from 
+        # Get the appropriate file paths from
         # the locally saved scene above.
         #------------------------
         projectDir = package['path']
-        mrmlFile =  package['mrml']  
-        
+        mrmlFile =  package['mrml']
+
 
 
         #------------------------
-        # Using the file paths above, 
+        # Using the file paths above,
         # zip up the save directory...
-        #------------------------ 
+        #------------------------
 
         #
         # Construct the .mrb uri.
         #
         srcMrb = projectDir + XnatSlicerGlobals.DEFAULT_SLICER_EXTENSION
-        
+
         #
-        # Remove any mrb files with the same name, 
+        # Remove any mrb files with the same name,
         # if they exist.
         #
-        if os.path.exists(srcMrb): 
-            os.remove(srcMrb) 
+        if os.path.exists(srcMrb):
+            os.remove(srcMrb)
 
         #-----------------------------------
         # IMPORTANT PLEASE READ!!!!
@@ -172,8 +172,8 @@ class Workflow_Save(object):
 
         #
         # Remove the uncompressed directory, as we
-        # don't need it any more. 
-        #       
+        # don't need it any more.
+        #
         shutil.rmtree(projectDir)
 
 
@@ -186,8 +186,8 @@ class Workflow_Save(object):
         # Construct the upload string.
         #
         dstMrb = self.MODULE.View.sessionManager.sessionArgs['saveUri'] + \
-                 "/" + os.path.basename(srcMrb)    
-
+                 "/" + os.path.basename(srcMrb)
+        print("destination mrb is %s" % dstMrb)
         #
         # Upload via XnatIo
         #
@@ -197,7 +197,7 @@ class Workflow_Save(object):
         # Process events.
         #
         slicer.app.processEvents()
-  
+
 
 
         #------------------------
@@ -227,5 +227,3 @@ class Workflow_Save(object):
         # Hide wait window
         #------------------------
         self.waitWindow.hide()
-
-                    

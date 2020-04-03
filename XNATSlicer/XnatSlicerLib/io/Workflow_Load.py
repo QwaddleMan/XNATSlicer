@@ -302,7 +302,9 @@ class Workflow_Load(object):
         # Get loaders, add to queue
         #------------------------
         for loader in self.loaderFactory(self._src):
-            if not loader.useCached:
+            if loader.useNifti and not os.path.isfile(loader.loadArgs['dst']):
+                self.MODULE.XnatIo.addToDownloadQueue(loader.loadArgs['src'], loader.loadArgs['dst'])
+            elif not loader.useCached:
                 self.MODULE.XnatIo.addToDownloadQueue(loader.loadArgs['src'], loader.loadArgs['dst'])
             self.loaders[loader.loadArgs['src']] = loader
 
