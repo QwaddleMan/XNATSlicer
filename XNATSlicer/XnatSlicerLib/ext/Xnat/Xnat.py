@@ -1181,12 +1181,36 @@ class Xnat(object):
             """
 
             src = src + "?format=zip"
+            print("dst base is %s" % dstBase)
             dst = os.path.join(dstBase , 'projects' +
                                src.replace('?format=zip', '').\
                         split('projects')[1].split('/files')[0] + '/files.zip')
             return src, dst
 
 
+        @staticmethod
+        def modifySrcDstForNiftiDownload(src, img, dstBase):
+            """
+            Modifies the variables src and dstBase to create a new src and a dst
+            for downloading a nifti file form XNAT.
+
+            @param src: The source URI to modify.
+            @type src: str
+
+            @param dstBase: The base destination URI to create the appropriate
+                dst from.
+            @type dstBase: str
+
+            @returns: The modified src, dst as tuples
+            @rtypes: str, str
+            """
+
+            print("dst base is %s" % dstBase)
+            src = src + img
+            dst = os.path.join(dstBase , 'nifti', img)
+            print("actual dst is %s" % dst)
+
+            return src, dst
 
 
         @staticmethod

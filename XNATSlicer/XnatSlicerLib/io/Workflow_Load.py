@@ -20,6 +20,7 @@ from Xnat import Xnat
 from Loader import *
 from Loader_Analyze import *
 from Loader_Dicom import *
+from Loader_Nifti import *
 from Loader_Mrb import *
 from Popup import *
 from SlicerUtils import *
@@ -95,6 +96,7 @@ class Workflow_Load(object):
         filesByType = {
             'analyze': [],
             'dicom': [],
+            'nifti': [],
             'misc': [],
             'unknown': []
         }
@@ -104,6 +106,8 @@ class Workflow_Load(object):
                 filesByType['analyze'].append(fileUri)
             elif XnatSlicerUtils.isDICOM(fileUri):
                 filesByType['dicom'].append(fileUri)
+            elif XnatSlicerUtils.isNIFTI(fileUri):
+                filesByType['nifti'].append(fileUri)
             elif XnatSlicerUtils.isMiscLoadable(fileUri):
                 filesByType['misc'].append(fileUri)
             else:
@@ -399,7 +403,6 @@ class Workflow_Load(object):
                         loaders.append(Loader_File(self.MODULE, _src, loadables[loadableType]))
                     if loadableType == 'nifti':
                         loaders.append(Loader_Nifti(self.MODULE, _src, loadables[loadableType]))
-
 
         #------------------------
         # '/experiments/' LEVEL

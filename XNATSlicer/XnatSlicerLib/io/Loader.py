@@ -194,7 +194,17 @@ class Loader_Images(Loader):
         #--------------------
         # Derive a src and dst
         #--------------------
-        self._src, self._dst = Xnat.path.modifySrcDstForZipDownload(self._src,
+        useNifti = False
+        niiName = None
+        niiUri = None
+        if(len(fileUris) == 1 and XnatSlicerUtils.isNIFTI(fileUris[0])):
+            useNifti = True
+            niiUri = fileUris[0]
+            niiName = os.path.basename(niiUri)
+            self._src, self._dst = Xnat.path.modifySrcDstForNiftiDownload(self._src, niiName,
+             self._dstBase)
+        else:
+            self._src, self._dst = Xnat.path.modifySrcDstForZipDownload(self._src,
                                                                 self._dstBase)
 
 
