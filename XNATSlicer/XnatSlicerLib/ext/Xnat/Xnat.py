@@ -438,6 +438,7 @@ class Xnat(object):
             # Put the file in XNAT using the internal '__httpsRequest'
             # method.
             #--------------------
+            print("fixed dst url is %s" % _dst)
             response = self.__httpsRequest('PUT', _dst, filebody,
                             {'content-type': 'application/octet-stream'})
             return response
@@ -770,6 +771,7 @@ class Xnat(object):
             # Make the request arguments
             #--------------------
             url = Xnat.path.makeXnatUrl(self.host, _uri)
+            print("http request created url is %s" % url)
             request = urllib2.Request(url)
             host = request.get_host()
             #print ("XNAT URL: ", _uri, url)
@@ -779,9 +781,12 @@ class Xnat(object):
             #
             # A ':' indicates the port...
             #--------------------
-            if re.search('^https', _uri):
+            print("host is %s " % self.host)
+            if re.search('^https', self.host):
+                print("SECURE")
                 connection = httplib.HTTPSConnection(host)
             else:
+                print("INSECURE")
                 connection = httplib.HTTPConnection(host)
 
             header = dict(self.authHeader.items() + headerAdditions.items())
@@ -875,6 +880,31 @@ class Xnat(object):
 
 
 
+        def getURIFromXnat(self, filesUrl, fileName):
+            """
+            gets files information from xnat in the form of a json
+            and retrieves the uri assigned to it.
+            """
+
+            filesUrl = filesUrl + '?format=json'
+            request = urllib2.Request(filesUrl)
+            request.add_header("Authorization", self.authHeader['Authorization'])
+
+            try:
+                response = urllib2.urlopen(request)
+                jsn = json.load(response)
+                for result in jsn['ResultSet']['Result']:
+                    if result['Name'] == fileName:
+                        print("URI IS %s" % result['URI'])
+                        return self.host + result['URI'][1:len(result['URI'])]
+
+                print("could not find file")
+                return
+            except Exception as e:
+                print("could not retrieve  files json")
+                return
+
+
 
 
         def __getFile_urllib(self, _src, _dst):
@@ -943,7 +973,6 @@ class Xnat(object):
             except Exception, e:
                 self.__downloadFailed(_src, _dst, dstFile, str(e))
                 return
-
 
 
             #--------------------
@@ -1207,7 +1236,7 @@ class Xnat(object):
             """
 
             print("dst base is %s" % dstBase)
-            src = src + '/' + img
+            src = src
             dst = os.path.join(dstBase , 'nifti', img)
             print("actual dst is %s" % dst)
 

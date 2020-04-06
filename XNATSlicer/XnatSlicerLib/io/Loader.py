@@ -203,6 +203,7 @@ class Loader_Images(Loader):
             self.useNifti = True
             self.niiUri = fileUris[0]
             self.niiName = os.path.basename(self.niiUri)
+            self._src = self.MODULE.XnatIo.getURIFromXnat(self._src,self.niiName)
             self._src, self._dst = Xnat.path.modifySrcDstForNiftiDownload(self._src, self.niiName,
              self._dstBase)
             self.car.addFile(self.niiName, self._dst)

@@ -191,6 +191,8 @@ class Workflow_Save(object):
         #
         # Upload via XnatIo
         #
+        print("srcMrb is %s" % srcMrb)
+        print("dstMrb is %s" % dstMrb)
         self.MODULE.XnatIo.putFile(srcMrb, dstMrb)
 
         #
