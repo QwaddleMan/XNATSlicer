@@ -199,14 +199,11 @@ class Loader_Images(Loader):
         # Derive a src and dst
         #--------------------
         if(len(fileUris) == 1 and XnatSlicerUtils.isNIFTI(fileUris[0])):
-            self.car = NiftiCar(os.path.join(self._dstBase, 'nifti'))
-            self.useNifti = True
             self.niiUri = fileUris[0]
             self.niiName = os.path.basename(self.niiUri)
             self._src = self.MODULE.XnatIo.getURIFromXnat(self._src,self.niiName)
             self._src, self._dst = Xnat.path.modifySrcDstForNiftiDownload(self._src, self.niiName,
              self._dstBase)
-            self.car.addFile(self.niiName, self._dst)
         else:
             self._src, self._dst = Xnat.path.modifySrcDstForZipDownload(self._src,
                                                                 self._dstBase)
