@@ -52,6 +52,7 @@ class View_Tree(View, qt.QTreeWidget):
         # View_Tree
         #----------------------
         qt.QTreeWidget.__init__(self)
+        self.collections = []
         self.setAnimated(True)
         self.setHeaderHidden(False)
         #treeWidgetSize = qt.QSize(100, 200)
@@ -954,12 +955,15 @@ class View_Tree(View, qt.QTreeWidget):
         """
         self.manageTreeNode(item, 0)
         self.setCurrentItem(item)
-
+        collectionInItem = False
+        for c in self.collections:
+            if(c in item.text(0)):
+                collectionInItem = True
         if not 'files' in item.text(self.columns['XNAT_LEVEL']['location']) \
            and \
           not 'Slicer' in item.text(self.columns['XNAT_LEVEL']['location']) \
           and \
-          not 'NIFTI' in item.text(1) and not 'DICOM' in item.text(1):
+          not collectionInItem:
             self.getChildren(item, expanded = True)
         self.resizeColumns()
 
@@ -1655,30 +1659,36 @@ class View_Tree(View, qt.QTreeWidget):
         #------------------------
 
         treeItems = []
-        NIFTIfolder = None
-        DICOMfolder = None
+        collectionFolder = None
         for i in range(0, len(children)):
             ##print "\n\nCHILDREN: ", children[i]
-            if(u'collection' in metadata):
-                if(metadata[u'collection'][i] == u'NIFTI' and NIFTIfolder == None):
-                    print("nifti folder not here creating it")
-                    NIFTIfolder = qt.QTreeWidgetItem(parentItem)
-                    NIFTIfolder.setText(1, "NIFTI")
-                    NIFTIfolder.setText(0, "NIFTI")
-                    parentItem.addChild(NIFTIfolder)
-                if(metadata[u'collection'][i] == u'DICOM' and DICOMfolder == None):
-                    print("dicom folder not here, creating it")
-                    DICOMfolder = qt.QTreeWidgetItem(parentItem)
-                    DICOMfolder.setText(1, 'DICOM')
-                    DICOMfolder.setText(0, 'DICOM')
-                    parentItem.addChild(DICOMfolder)
-
-                if(metadata[u'collection'][i] == u'NIFTI'):
-                    currParent = NIFTIfolder
-                elif(metadata[u'collection'][i] == u'DICOM'):
-                    currParent = DICOMfolder
-                else:
+            if(u'collection' in metadata and metadata['XNAT_LEVEL'][i] == 'files'):
+                currentCollection = metadata[u'collection'][i].encode('ascii', 'ignore')
+                print(currentCollection)
+                currParent = parentItem
+                if(currentCollection == 'Slicer'):
+                    print("ignoring...")
+                    print("current parent is parentItem")
                     currParent = parentItem
+                elif(collectionFolder == None or collectionFolder.text(0) != currentCollection):
+                    collectionFolder = None
+                    for childI in range(0, parentItem.childCount()):
+                        if(parentItem.child(childI).text(0) == currentCollection):
+                            collectionFolder = parentItem.child(childI)
+                            break
+                    if( collectionFolder == None):
+                        if(metadata[u'collection'][i] not in self.collections):
+                            self.collections.append(currentCollection)
+                        collectionFolder = qt.QTreeWidgetItem(parentItem)
+                        collectionFolder.setText(1, currentCollection)
+                        collectionFolder.setText(0, currentCollection)
+                        print(currentCollection)
+                        parentItem.addChild(collectionFolder)
+                        print("current parent is %s" % collectionFolder.text(0))
+                        currParent = collectionFolder
+                    else:
+                        print("current parent is parentItem")
+                        currParent = parentItem
             else:
                 currParent = parentItem
 
