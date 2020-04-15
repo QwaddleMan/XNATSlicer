@@ -2,4 +2,6 @@
 *.dcm
 *.mrml
 XNATSlicer/Cache/*
-
+XNATSlicer/Settings/*
+*.txt
+*.ini

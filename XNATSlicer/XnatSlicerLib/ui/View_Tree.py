@@ -957,7 +957,9 @@ class View_Tree(View, qt.QTreeWidget):
 
         if not 'files' in item.text(self.columns['XNAT_LEVEL']['location']) \
            and \
-          not 'Slicer' in item.text(self.columns['XNAT_LEVEL']['location']):
+          not 'Slicer' in item.text(self.columns['XNAT_LEVEL']['location']) \
+          and \
+          not 'NIFTI' in item.text(1) and not 'DICOM' in item.text(1):
             self.getChildren(item, expanded = True)
         self.resizeColumns()
 
@@ -1651,12 +1653,36 @@ class View_Tree(View, qt.QTreeWidget):
         #------------------------
         # Add children to parentItem
         #------------------------
+
         treeItems = []
+        NIFTIfolder = None
+        DICOMfolder = None
         for i in range(0, len(children)):
             ##print "\n\nCHILDREN: ", children[i]
+            if(u'collection' in metadata):
+                if(metadata[u'collection'][i] == u'NIFTI' and NIFTIfolder == None):
+                    print("nifti folder not here creating it")
+                    NIFTIfolder = qt.QTreeWidgetItem(parentItem)
+                    NIFTIfolder.setText(1, "NIFTI")
+                    NIFTIfolder.setText(0, "NIFTI")
+                    parentItem.addChild(NIFTIfolder)
+                if(metadata[u'collection'][i] == u'DICOM' and DICOMfolder == None):
+                    print("dicom folder not here, creating it")
+                    DICOMfolder = qt.QTreeWidgetItem(parentItem)
+                    DICOMfolder.setText(1, 'DICOM')
+                    DICOMfolder.setText(0, 'DICOM')
+                    parentItem.addChild(DICOMfolder)
 
+                if(metadata[u'collection'][i] == u'NIFTI'):
+                    currParent = NIFTIfolder
+                elif(metadata[u'collection'][i] == u'DICOM'):
+                    currParent = DICOMfolder
+                else:
+                    currParent = parentItem
+            else:
+                currParent = parentItem
 
-            treeNode = qt.QTreeWidgetItem(parentItem)
+            treeNode = qt.QTreeWidgetItem(currParent)
             #
             # Set expanded (0 = expandable, 1 = not)
             #
@@ -1699,7 +1725,7 @@ class View_Tree(View, qt.QTreeWidget):
         # SPECIAL CASE: If at project level, set parents accordingly.
         #------------------------
         if str(parentItem.__class__) == "<class 'View_Tree.View_Tree'>":
-            parentItem.addTopLevelItems(treeItems)
+            currParent.addTopLevelItems(treeItems)
             return
 
 
@@ -1707,7 +1733,7 @@ class View_Tree(View, qt.QTreeWidget):
         #------------------------
         # Items array gets added to parentItem.
         #------------------------
-        parentItem.addChildren(treeItems)
+        currParent.addChildren(treeItems)
 
 
 
